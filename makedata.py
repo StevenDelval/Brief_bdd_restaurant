@@ -68,8 +68,11 @@ for restaurant in session.query(RestaurantTable).all():
             session.add(ligne)
             session.commit()
 
-
-
+## Remplire table salaire
+for employe in session.query(EmployeTable).all() :
+    ligne = SalaireTable(id_employe=employe.id_employe,salaire=random.uniform(1200,5000),data_de_paie="2022-11-30")
+    session.add(ligne)
+    session.commit()
     
 
 
