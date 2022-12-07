@@ -11,3 +11,17 @@ def correspondance(pays_code):
         return "Japon"
     if pays_code == "en_GB":
         return "Grande Bretagne"
+
+def inv_correspondance(pays):
+    if pays == "France":
+        return "fr_FR"
+    if pays == "Etat Unie":
+        return "en_US"
+    if pays == "Espagne":
+        return "es_ES"
+    if pays == "Italie":
+        return "it_IT"
+    if pays == "Japon":
+        return "ja_JP"
+    if pays == "Grande Bretagne":
+        return "en_GB"
