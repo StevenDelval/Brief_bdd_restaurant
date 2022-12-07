@@ -1,9 +1,9 @@
 import pandas as pd
-from sqlalchemy import create_engine,insert
+from sqlalchemy import create_engine
 from sqlalchemy import MetaData,Table, Column, Integer, String, MetaData,Float,Boolean, CheckConstraint,ForeignKey
 from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker , relationship
+from sqlalchemy.orm import sessionmaker 
 
 
 
@@ -147,8 +147,4 @@ class MenuInTicketTable(Base):
 
 Base.metadata.create_all(bind=engine)
 
-
-
-# session.add()
-# session.commit()
 session.close()
