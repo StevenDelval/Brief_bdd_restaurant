@@ -198,20 +198,137 @@ list_ingredient = IngredientTable.liste_ingredient()
 list_item = ItemTable.liste_item()
 
 for item in list_item:
+
     nb_ingredient=random.randint(3,6)
     liste_choix=random.sample(list_ingredient,nb_ingredient)
 
     for k in range(nb_ingredient):
-        
+        loading(0)
+
         ligne = RecetteTable(\
             link_item = item.id_item,\
             link_ingredient = liste_choix[k].id_ingredient,\
             quantite = random.choice([1,2,3])\
         )
+        loading(50)
+
         session.add(ligne)
         session.commit()
 
-list_item = ItemTable.liste_item()
+        loading(100)
 
+## Correction prix des Item
+list_item = ItemTable.liste_item()
+for item in list_item :
+    loading(0)
+    with engine.begin() as con:
+        rs = con.execute("Select Item.id_item,SUM( Recette.quantite * Ingredient.prix_ingredient)  FROM Item \
+                JOIN Recette ON Item.id_item=Recette.link_item \
+                JOIN  Ingredient ON Recette.link_ingredient=Ingredient.id_ingredient \
+                WHERE Item.id_item = (?) \
+                GROUP BY Item.id_item ",(item.id_item))
+        loading(50)
+        for row in rs:
+        
+            con.execute("Update Item SET prix_de_fabrication = ? ,prix_de_vente = ? WHERE id_item = ? ",(round(row[1],2),round(row[1]+2,2),item.id_item))
+            
+session.close_all()
+db_url = "sqlite:///bdd_restaurant.db"
+engine = create_engine(db_url)
+Session = sessionmaker(bind=engine) 
+session = Session()
+
+## Remplire Menu
+for nb in range(random.randint(5,30)) :
+    fake = Faker("fr_FR")
+    loading(0)
+    
+    plat =random.choice(ItemTable.select_type("plat"))
+    boisson =random.choice(ItemTable.select_type("boisson"))
+    dessert =random.choice(ItemTable.select_type("dessert"))
+    text = fake.text().split(' ')
+    nom_menu = text[0] + text [1] + text[2] 
+    
+    ligne = MenuTable(nom=nom_menu,plat=plat.id_item,boisson=boisson.id_item,dessert = dessert.id_item ,\
+        prix_de_vente=round((plat.prix_de_vente + boisson.prix_de_vente + dessert.prix_de_vente)-1,2)) 
+    
+    loading(50)
+    
+    session.add(ligne)
+    session.commit()
+    
+    loading(100)
+
+## Creation ticket
+for restaurant in RestaurantTable.liste_tous_resto():
+    for nb in range(random.randint(5,20)):
+        employe =random.choice(EmployeTable.employe_restaurant(restaurant.id_restaurant))
+        borne = 0
+        if EmployeTable.poste_employe(employe.id_employe) == "directeur":
+            borne = 1
+
+        loading(0)
+        minute =random.randint(0,59)
+        if minute < 10:
+            minute = "0"+ str(minute)
+        else:
+            minute= str(minute)
+        ligne = TicketTable(id_restaurant=restaurant.id_restaurant,\
+            id_employe=employe.id_employe,borne=borne,heure=(str(random.randint(8,23))+":"+minute),\
+                moyen_de_payment=random.choice(['cb','espece'])) 
+    
+        loading(50)
+    
+        session.add(ligne)
+        session.commit()
+    
+        loading(100)
+
+## Remplir menu in carte
+liste_carte = CarteTable.liste_carte()
+liste_menu = MenuTable.liste_menu()
+
+for carte in liste_carte:
+
+    nb_menu=random.randint(2,len(liste_menu))
+    liste_choix=random.sample(liste_menu,nb_menu)
+
+    for k in range(nb_menu):
+        loading(0)
+
+        ligne = MenuInCarteTable(\
+            link_menu = liste_choix[k].id_menu,\
+            link_pays = carte.pays)
+        
+    
+        loading(50)
+
+        session.add(ligne)
+        session.commit()
+
+        loading(100)
+## Remplir item in carte
+liste_carte = CarteTable.liste_carte()
+liste_item = ItemTable.liste_item()
+
+for carte in liste_carte:
+
+    nb_item=random.randint(2,len(liste_item))
+    liste_choix=random.sample(liste_item,nb_item)
+
+    for k in range(nb_item):
+        loading(0)
+
+        ligne = ItemInCarteTable(\
+            link_item = liste_choix[k].id_item,\
+            link_pays = carte.pays)
+        
+    
+        loading(50)
+
+        session.add(ligne)
+        session.commit()
+
+        loading(100)
 
 session.close()
