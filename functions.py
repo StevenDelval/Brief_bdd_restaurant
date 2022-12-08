@@ -23,6 +23,7 @@ list_dessert = ['le mcflurry','le sundea','le petit glace saveur vanille','le do
 
 list_menu = ['Le Menu Best Of','Le Menu Maxi Best Of','Le Menu Salade']
 
+list_ingredient =['Bœuf', 'poulet', 'pomme de terre', 'blé', 'salade', 'poisson', 'oeuf', 'pommes','coca33ml','coca50ml','coca100ml','le nectar de pomme bio','minute maid orange','le mcflurry','le sundea','le petit glace saveur vanille','le donut nature','le duo de macarons']
 
 list_nom_item = list_burger + list_boisson + list_salade + list_dessert
 

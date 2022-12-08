@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine,select
 from sqlalchemy import MetaData,Table, Column, Integer, String, MetaData,Float,Boolean, CheckConstraint,ForeignKey
 from sqlalchemy.orm import sessionmaker 
 from faker import Faker
@@ -31,7 +31,7 @@ for arg in faker_arg:
         session.add(ligne)
         session.commit()
 
-list_ingredient =['Bœuf', 'poulet', 'pomme de terre', 'blé', 'salade', 'poisson', 'oeuf', 'pommes','coca33ml','coca50ml','coca100ml','le nectar de pomme bio','minute maid orange','le mcflurry','le sundea','le petit glace saveur vanille','le donut nature','le duo de macarons']
+
 
 for elt in list_ingredient:
     ligne = IngredientTable(nom = elt,prix_ingredient = round(random.uniform(0, 1), 2) )
@@ -50,6 +50,23 @@ for elt in list_nom_item:
     
     session.add(ligne)
     session.commit()
+
+list_id_ingredient = engine.connect().execute(select([IngredientTable.id_ingredient])).fetchall()
+list_id_item =engine.connect().execute(select([ItemTable.id_item])).fetchall()
+
+
+for i in range(len(list_id_item)):
+    for k in range(random.randint(3,6)):
+        ligne = RecetteTable(
+            id_item = list_id_item[i],
+            id_ingredient = list_id_ingredient[k],
+            quantite = random.choice([1,2,3])
+        )
+    session.add(ligne)
+    session.commit()
+
+
+
 
 
 
