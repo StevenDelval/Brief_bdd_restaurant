@@ -15,7 +15,7 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 ## Remplire table carte
-faker_arg = ["fr_FR"] # , "en_US","es_ES","it_IT","ja_JP","en_GB"]
+faker_arg = ["fr_FR" , "en_US","es_ES","it_IT","ja_JP","en_GB"]
 for country in faker_arg:
     loading(0)
     
@@ -31,7 +31,7 @@ for arg in faker_arg:
     
     fake = Faker(arg)
     
-    for nb in range(random.randint(1,30)):
+    for nb in range(random.randint(1,20)):
         loading(0)
 
         ligne=RestaurantTable(pays=correspondance(arg),ville=fake.city(),\
@@ -67,7 +67,7 @@ for restaurant in RestaurantTable.liste_tous_resto():
     loading(100)
     
     #### Creation des manager pour le directeur
-    for manager in range(random.randint(0,5)):
+    for manager in range(random.randint(1,4)):
         
         loading(0)
         
@@ -85,7 +85,7 @@ for restaurant in RestaurantTable.liste_tous_resto():
         loading(100)
         
     #### Creation des employe pour le manager
-        for employe in range(random.randint(0,5)):
+        for employe in range(random.randint(1,4)):
             
             loading(0)
             
@@ -331,4 +331,89 @@ for carte in liste_carte:
 
         loading(100)
 
-session.close()
+
+## Remplire Menu in ticket
+liste_ticket = TicketTable.liste_ticket()
+
+for ticket in liste_ticket:
+    id_restaurant = ticket.id_restaurant
+    pays_restaurant =RestaurantTable.pays_restaurant(id_restaurant)
+    liste_menu_carte =MenuInCarteTable.menu_pays(pays_restaurant)
+    
+
+
+    nb_menu=random.randint(1,len(liste_menu_carte))
+    liste_choix=random.sample(liste_menu_carte,nb_menu)
+
+    for k in range(nb_menu):
+        loading(0)
+        
+        ligne = MenuInTicketTable(\
+            link_menu = liste_choix[k].link_menu,\
+            link_ticket = ticket.id_ticket,quantite = random.choice([1,2,3]))
+        
+    
+        loading(50)
+
+        session.add(ligne)
+        session.commit()
+
+        loading(100)
+
+## Remplire item in ticket
+for ticket in liste_ticket:
+    id_restaurant = ticket.id_restaurant
+    pays_restaurant =RestaurantTable.pays_restaurant(id_restaurant)
+    liste_item_carte =ItemInCarteTable.item_pays(pays_restaurant)
+
+
+    nb_menu=random.randint(1,len(liste_item_carte))
+    liste_choix=random.sample(liste_item_carte,nb_menu)
+
+    for k in range(nb_menu):
+        loading(0)
+
+        ligne = ItemInTicketTable(\
+            link_item = liste_choix[k].link_item,\
+            link_ticket = ticket.id_ticket,quantite = random.choice([1,2,3]))
+        
+    
+        loading(50)
+
+        session.add(ligne)
+        session.commit()
+
+        loading(100)
+
+
+
+session.close_all()
+
+db_url = "sqlite:///bdd_restaurant.db"
+engine = create_engine(db_url)
+Session = sessionmaker(bind=engine) 
+session = Session()
+liste_ticket = TicketTable.liste_ticket()
+
+for ticket in liste_ticket:
+    loading(0)
+    with engine.begin() as con:
+        item = con.execute("Select Ticket.id_ticket,SUM( ItemInTicket.quantite * Item.prix_de_vente)  FROM Ticket \
+                JOIN ItemInTicket ON Ticket.id_ticket=ItemInTicket.link_ticket \
+                JOIN  Item ON Item.id_item=ItemInTicket.link_item \
+                WHERE Ticket.id_ticket = (?) \
+                GROUP BY Ticket.id_ticket ",(ticket.id_ticket))
+        loading(50)
+        for row in item:
+            total_item =round(row[1],2)
+
+        menu = con.execute("Select Ticket.id_ticket,SUM( MenuInTicket.quantite * Menu.prix_de_vente)  FROM Ticket \
+                JOIN MenuInTicket ON Ticket.id_ticket=MenuInTicket.link_ticket \
+                JOIN  Menu ON Menu.id_menu=MenuInTicket.link_menu \
+                WHERE Ticket.id_ticket = (?) \
+                GROUP BY Ticket.id_ticket ",(ticket.id_ticket))
+        for row in menu:
+            total_menu =round(row[1],2)
+        total =round(total_item + total_menu,2)
+        con.execute("Update Ticket SET prix_total = ? WHERE id_ticket = ? ",(total,ticket.id_ticket))
+        loading(100)
