@@ -38,13 +38,19 @@ for elt in list_ingredient:
     session.add(ligne)
     session.commit()
 
-list_nom_item =
-ligne = ItemTable(
-    nom = ,
-    prix_de_vente = ,
-    prix_de_revient =,
-    type_item = ,
-)
+
+for elt in list_nom_item:
+    ligne = ItemTable(
+
+        nom =elt,
+        prix_de_vente = round(random.uniform(1, 2), 2),
+        prix_de_revient = round(random.uniform(0, 1), 2),
+        type_item = correspondance_type(elt)
+        )
+    
+    session.add(ligne)
+    session.commit()
+
 
 
 
