@@ -5,6 +5,9 @@ from faker import Faker
 from create_db import *
 from functions import *
 import random
+random.seed(0)
+Faker.seed(0)
+
 
 db_url = "sqlite:///bdd_restaurant.db"
 engine = create_engine(db_url)
@@ -27,6 +30,21 @@ for arg in faker_arg:
             )
         session.add(ligne)
         session.commit()
+
+list_ingredient =['Bœuf', 'poulet', 'pomme de terre', 'blé', 'salade', 'poisson', 'oeuf', 'pommes','coca33ml','coca50ml','coca100ml','le nectar de pomme bio','minute maid orange','le mcflurry','le sundea','le petit glace saveur vanille','le donut nature','le duo de macarons']
+
+for elt in list_ingredient:
+    ligne = IngredientTable(nom = elt,prix_ingredient = round(random.uniform(0, 1), 2) )
+    session.add(ligne)
+    session.commit()
+
+list_nom_item =
+ligne = ItemTable(
+    nom = ,
+    prix_de_vente = ,
+    prix_de_revient =,
+    type_item = ,
+)
 
 
 
