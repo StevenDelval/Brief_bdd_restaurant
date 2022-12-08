@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine,select
 from sqlalchemy import MetaData,Table, Column, Integer, String, MetaData,Float,Boolean, CheckConstraint,ForeignKey
 from sqlalchemy.orm import sessionmaker 
 from faker import Faker
@@ -31,7 +31,7 @@ for arg in faker_arg:
     
     fake = Faker(arg)
     
-    for nb in range(random.randint(1,60)):
+    for nb in range(random.randint(1,30)):
         loading(0)
 
         ligne=RestaurantTable(pays=correspondance(arg),ville=fake.city(),\
@@ -85,7 +85,7 @@ for restaurant in RestaurantTable.liste_tous_resto():
         loading(100)
         
     #### Creation des employe pour le manager
-        for employe in range(random.randint(0,10)):
+        for employe in range(random.randint(0,5)):
             
             loading(0)
             
@@ -117,6 +117,7 @@ for employe in EmployeTable.tous_les_employe() :
     session.commit()
     
     loading(100)
+
 ## Remplire table ingredient
 list_ingredient =['boeuf','pain',"steak", 'poulet','maroille',"eau" ,'pomme de terre', 'blé', 'salade', 'poisson', 'oeuf',"poire", 'pommes','coca33ml','coca50ml','coca100ml','fanta33ml','fanta50ml','fanta100ml']
 
@@ -150,6 +151,67 @@ for restaurant in RestaurantTable.liste_tous_resto():
     
         loading(100)
 
+## Remplire table item
+list_burger = ['Le Tomme des Pyrénées IGP & Bacon Fumé - 1 viande','Le Tomme des Pyrénées IGP & Bacon Fumé - 2 viandes','Le Beef BBQ - 1 viande','Le Beef BBQ - 2 Viandes','Le Big Mac','Le McChicken','Le 280 Original','Le Filet-O-Fish','Le Double Filet-O-fish','Le Cheeseburger','Le Cheeseburger Bacon','Le Triple Cheeseburger Bacon']
+list_boisson=['coca33ml','coca50ml','coca100ml','le nectar de pomme bio','minute maid orange']
+list_dessert = ['le mcflurry','le sundea','le petit glace saveur vanille','le donut nature','le duo de macarons']
+
+for plat in list_burger :
+    loading(0)
+
+    
+    ligne = ItemTable(nom=plat,type_item="plat")
+    
+    loading(50)
+    
+    session.add(ligne)
+    session.commit()
+    
+    loading(100)  
+for plat in list_boisson :
+    loading(0)
+
+    
+    ligne = ItemTable(nom=plat,type_item="boisson")
+    
+    loading(50)
+    
+    session.add(ligne)
+    session.commit()
+    
+    loading(100)  
+for plat in list_dessert :
+    loading(0)
+
+    
+    ligne = ItemTable(nom=plat,type_item="dessert")
+    
+    loading(50)
+    
+    session.add(ligne)
+    session.commit()
+    
+    loading(100)  
+
+## Remplire Recette
+list_ingredient = IngredientTable.liste_ingredient()
+list_item = ItemTable.liste_item()
+
+for item in list_item:
+    nb_ingredient=random.randint(3,6)
+    liste_choix=random.sample(list_ingredient,nb_ingredient)
+
+    for k in range(nb_ingredient):
+        
+        ligne = RecetteTable(\
+            link_item = item.id_item,\
+            link_ingredient = liste_choix[k].id_ingredient,\
+            quantite = random.choice([1,2,3])\
+        )
+        session.add(ligne)
+        session.commit()
+
+list_item = ItemTable.liste_item()
 
 
 session.close()
