@@ -41,6 +41,13 @@ class RestaurantTable(Base):
     borne_service = Column('borne_service',Integer())
     accessible_pmr = Column('accessible_pmr',Integer())
     parking = Column('parking',Integer())
+    
+    def liste_tous_resto():
+        """
+        Methode qui liste tous les restaurants
+        :return list
+        """
+        return session.query(RestaurantTable).all()
 
 ## Table employe
 class EmployeTable(Base):
@@ -55,6 +62,25 @@ class EmployeTable(Base):
     poste = Column('poste',String())
     note = Column('note',Integer())
     date_entree = Column('date_entree',String())
+    
+    def tous_les_employe():
+        """
+        Methode qui liste tous les employees
+        :return list object
+        """
+        return session.query(EmployeTable).all()
+    def dernier_employe():
+        """
+        Methode qui donne le dernier employe ajoute
+        :return id_employe
+        """
+        return session.query(EmployeTable).all()[-1].id_employe
+    def poste_employe(id):
+        """
+        Methode qui donne le poste de l'employe 
+        :return poste 
+        """
+        return session.query(EmployeTable).filter_by(id_employe=id).first().poste
 
 ## Table salaire
 class SalaireTable(Base):
@@ -70,6 +96,13 @@ class IngredientTable(Base):
     id_ingredient =Column('id_ingredient',Integer(),primary_key =True)
     nom = Column('nom',String())
     prix_ingredient = Column('prix_ingredient',Float(precision = 2))
+
+    def liste_ingredient():
+        """
+        Methode qui liste tous les Ingredients
+        :return list
+        """
+        return session.query(IngredientTable).all()
 
 ## Table stock
 class StockTable(Base):
