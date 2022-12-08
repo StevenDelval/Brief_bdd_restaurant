@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy import MetaData,Table, Column, Integer, String, MetaData,Float,Boolean, CheckConstraint,ForeignKey
 from sqlalchemy_utils import database_exists, create_database
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker 
+from sqlalchemy.orm import sessionmaker,column_property
 
 
 
@@ -117,14 +117,18 @@ class ItemTable(Base):
     id_item = Column('id_item',Integer(),primary_key = True)
     nom = Column('nom',String())
     prix_de_vente = Column('prix_de_vente',Float(precision=2))
-    prix_de_revient =Column('prix_de_revient',Float(precision=2))
+    prix_de_fabrication =Column('prix_de_fabrication',Float(precision=2))
     type_item = Column('type_item',String())
+    def liste_item():
+        return session.query(ItemTable).all() 
 
 ## Table recette
 class RecetteTable(Base):
     __tablename__ = 'Recette'
-    id_item = Column('id_item',Integer(),ForeignKey('Item.id_item'),primary_key = True)
-    id_ingredient = Column('id_ingredient',Integer(),ForeignKey('Ingredient.id_ingredient'),primary_key = True)
+    link_item = column_property(Column(Integer,primary_key = True), ItemTable.id_item)
+    link_ingredient = column_property(Column(Integer,primary_key = True), IngredientTable.id_ingredient)
+    id_item = Column(Integer(),ForeignKey('Item.id_item'))
+    id_ingredient = Column(Integer(),ForeignKey('Ingredient.id_ingredient'))
     quantite = Column('quantite',Integer())
 
 ## Table menu
@@ -140,12 +144,16 @@ class MenuTable(Base):
 ## Table  menu in carte
 class MenuInCarteTable(Base):
     __tablename__ = 'MenuInCarte'
+    link_menu = column_property(Column(Integer(),primary_key = True), MenuTable.id_menu)
+    link_pays = column_property(Column(Integer(),primary_key = True), CarteTable.pays)
     pays = Column('pays',Integer(),ForeignKey('Carte.pays'),primary_key = True)
     id_menu =Column('id_menu',Integer(),ForeignKey('Menu.id_menu'),primary_key = True)
 
 ## Table item in carte
 class ItemInCarteTable(Base):
     __tablename__ = 'ItemInCarte'
+    link_item = column_property(Column(Integer(),primary_key = True), ItemTable.id_item)
+    link_pays = column_property(Column(Integer(),primary_key = True), CarteTable.pays)
     pays = Column('pays',Integer(),ForeignKey('Carte.pays'),primary_key = True)
     id_item =Column('id_item',Integer(),ForeignKey('Item.id_item'),primary_key = True)
 
@@ -163,6 +171,8 @@ class TicketTable(Base):
 ## Table item in ticket
 class ItemInTicketTable(Base):
     __tablename__ = 'ItemInTicket'
+    link_ticket = column_property(Column(Integer(),primary_key = True), TicketTable.id_ticket)
+    link_item = column_property(Column(Integer(),primary_key = True), ItemTable.id_item)
     id_ticket = Column('id_ticket', Integer(),ForeignKey('Ticket.id_ticket'),primary_key = True)
     id_item =Column('id_item',Integer(),ForeignKey('Item.id_item'),primary_key = True)
 
@@ -171,6 +181,8 @@ class ItemInTicketTable(Base):
 ## Table menu in ticket
 class MenuInTicketTable(Base):
     __tablename__ = 'MenuInTicket'
+    link_menu = column_property(Column(Integer(),primary_key = True), MenuTable.id_menu)
+    link_ticket = column_property(Column(Integer(),primary_key = True), TicketTable.id_ticket)
     id_ticket = Column('id_ticket', Integer(),ForeignKey('Ticket.id_ticket'),primary_key = True)
     id_menu =Column('id_menu',Integer(),ForeignKey('Menu.id_menu'),primary_key = True)
     
