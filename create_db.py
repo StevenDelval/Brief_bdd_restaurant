@@ -28,7 +28,12 @@ class CarteTable(Base):
     __tablename__ = 'Carte'
     
     pays = Column('pays', String(64),primary_key=True)
-
+    def liste_carte():
+        """
+        Methode qui liste tous les cartes
+        :return list
+        """
+        return session.query(CarteTable).all()
 ## Table restaurant
 class RestaurantTable(Base):
     __tablename__ = 'Restaurant'
@@ -81,7 +86,8 @@ class EmployeTable(Base):
         :return poste 
         """
         return session.query(EmployeTable).filter_by(id_employe=id).first().poste
-
+    def employe_restaurant(id_restaurant):
+        return session.query(EmployeTable).filter_by(id_restaurant=id_restaurant).all()
 ## Table salaire
 class SalaireTable(Base):
     __tablename__ = 'Salaire'
@@ -120,7 +126,9 @@ class ItemTable(Base):
     prix_de_fabrication =Column('prix_de_fabrication',Float(precision=2))
     type_item = Column('type_item',String())
     def liste_item():
-        return session.query(ItemTable).all() 
+        return session.query(ItemTable).all()
+    def select_type(type):
+        return session.query(ItemTable).filter_by(type_item=type).all()
 
 ## Table recette
 class RecetteTable(Base):
@@ -140,22 +148,24 @@ class MenuTable(Base):
     plat = Column('plat',Integer(),ForeignKey('Item.id_item'))
     dessert = Column('dessert',Integer(),ForeignKey('Item.id_item'))
     boisson = Column('boisson',Integer(),ForeignKey('Item.id_item'))
+    def liste_menu():
+        return session.query(MenuTable).all()
 
 ## Table  menu in carte
 class MenuInCarteTable(Base):
     __tablename__ = 'MenuInCarte'
     link_menu = column_property(Column(Integer(),primary_key = True), MenuTable.id_menu)
     link_pays = column_property(Column(Integer(),primary_key = True), CarteTable.pays)
-    pays = Column('pays',Integer(),ForeignKey('Carte.pays'),primary_key = True)
-    id_menu =Column('id_menu',Integer(),ForeignKey('Menu.id_menu'),primary_key = True)
+    pays = Column('pays',Integer(),ForeignKey('Carte.pays'))
+    id_menu =Column('id_menu',Integer(),ForeignKey('Menu.id_menu'))
 
 ## Table item in carte
 class ItemInCarteTable(Base):
     __tablename__ = 'ItemInCarte'
     link_item = column_property(Column(Integer(),primary_key = True), ItemTable.id_item)
     link_pays = column_property(Column(Integer(),primary_key = True), CarteTable.pays)
-    pays = Column('pays',Integer(),ForeignKey('Carte.pays'),primary_key = True)
-    id_item =Column('id_item',Integer(),ForeignKey('Item.id_item'),primary_key = True)
+    pays = Column('pays',Integer(),ForeignKey('Carte.pays'))
+    id_item =Column('id_item',Integer(),ForeignKey('Item.id_item'))
 
 ## Table ticket
 class TicketTable(Base):
@@ -167,6 +177,9 @@ class TicketTable(Base):
     heure =Column('heure',String())
     moyen_de_payment = Column('moyen_de_payment',String())
     prix_total = Column('prix_total',Float(precision=2))
+    def liste_ticket():
+        return session.query(TicketTable).all()
+
 
 ## Table item in ticket
 class ItemInTicketTable(Base):
